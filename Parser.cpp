@@ -126,6 +126,8 @@ int main() {
     
     map<string, vector<vector<string>>> productionRules;
     
+    string firstSymbol; 
+    bool isFirst = true;
     for (int i = 0; i < numRules; ++i) {
         string rule;
         cout << "Enter grammar rule " << i + 1 << ": ";
@@ -133,6 +135,10 @@ int main() {
         // S -> A C B | C b b | B a
         size_t arrowPos = rule.find("->"); 
         string symbol = removeSpace(rule.substr(0, arrowPos)); // extracting the symbol
+        if(isFirst) {
+            firstSymbol = symbol;
+            isFirst = false;
+        }
         string productionPart = removeSpace(rule.substr(arrowPos + 2)); // extracting the production as after arrow till end
         vector<string> alternatives = breakProduction(productionPart, '|'); // splitted the productions as:
         // {A C B | C b b | B a} : A C B , C b b , B a
@@ -163,7 +169,6 @@ int main() {
     }
     
     map<string, set<string>> firstSets;// A map where firstsets will be stored
-
     for (const auto& rule : productionRules) {
         calculateFirstFunction(rule.first, productionRules, firstSets);
         //              symbol,        rules,          output
@@ -183,9 +188,10 @@ int main() {
         cout << " }\n";
     }
     cout<<endl;
+
     
     map<string, set<string>> followSets;
-    followSets["S"].insert("$");
+    followSets[firstSymbol].insert("$");
     //inserting $ sign for the first rule
     set<string> visited;
     // a set to track the visited symbol
